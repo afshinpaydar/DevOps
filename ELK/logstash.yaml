@@ -7,7 +7,7 @@ metadata:
   labels:
     app: logstash
 spec:
-  replicas: 1
+  replicas: 3
   template:
       metadata:
         labels:
@@ -25,10 +25,10 @@ spec:
           - "input { tcp { port => 9400 } } output { elasticsearch { hosts => 'http://elasticsearch:9200' } }"
           resources:
             limits:
-              memory: 512Mi
+              memory: 1024Mi
             requests:
-              cpu: 100m
-              memory: 512Mi
+              cpu: 2000m
+              memory: 1024Mi
           volumeMounts:
           - mountPath: /usr/share/logstash/data
             name: data
