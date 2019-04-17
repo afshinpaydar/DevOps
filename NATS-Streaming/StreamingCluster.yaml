@@ -1,0 +1,8 @@
+apiVersion: "streaming.nats.io/v1alpha1"
+kind: "NatsStreamingCluster"
+metadata:
+  name: "example-stan"
+  namespace: "farabixo-nats-stream-broker"
+spec:
+  size: 3
+  natsSvc: "example-nats"
