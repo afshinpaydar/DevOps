@@ -1,7 +1,7 @@
 git clone https://github.com/travelaudience/aerospike-operator.git
 cd aerospike-operator
 vim +154 docs/examples/00-prereqs.yml
-O
+
 - apiGroups:
   - aerospike.travelaudience.com
   resources:
@@ -9,7 +9,7 @@ O
   - aerospikenamespacebackups/finalizers
   - aerospikenamespacerestores/finalizers
   verbs:
-  - updateO
+  - update
 
 :x
 vim +24  docs/examples/10-aerospike-operator.yml
@@ -20,7 +20,7 @@ vim docs/examples/20-aerospike-cluster.yml
 G
 
       storageClassName: glusterfs-storage
-      accessModes: ReadWriteMany
+      
 
 :x
 
@@ -32,6 +32,19 @@ oc adm policy add-role-to-user admin admin -n aerospike-operator #It must show "
 oc create -f docs/examples/10-aerospike-operator.yml
 oc create -f docs/examples/20-aerospike-cluster.yml
 
+
+oc get svc as-cluster-0 -o yaml | grep uid
+    uid: 9a8f098d-6322-11e9-95f6-005056afc8ad
+
+
+#change uid in service yaml file based on previous service
+oc create -f service-expose.yaml
+
 #ALL Nodes
 iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 3000 -j ACCEPT
+iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 3002 -j ACCEPT
 
+
+
+iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 9145 -j ACCEPT
+iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 3002 -j ACCEPT
