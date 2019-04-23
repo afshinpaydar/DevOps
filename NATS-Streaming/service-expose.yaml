@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nats
+    nats_cluster: farabixo-nats
+  name: farabixo-nats-1
+  namespace: farabixo-nats-stream-broker
+  ownerReferences:
+    - apiVersion: nats.io/v1alpha2
+      controller: true
+      kind: NatsCluster
+      name: farabixo-nats
+      uid: 4d1db4b5-64f7-11e9-bea0-005056af2f60
+  selfLink: /api/v1/namespaces/farabixo-nats-stream-broker/services/farabixo-nats
+spec:
+  externalIPs:
+    - 192.168.110.134
+    - 192.168.110.135
+    - 192.168.110.136
+  ports:
+    - name: client
+      port: 4222
+      protocol: TCP
+      targetPort: 4222
+  selector:
+    app: nats
+    nats_cluster: farabixo-nats
+
