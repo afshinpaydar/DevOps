@@ -22,6 +22,13 @@ yum install -y tmux
 tmux
 yum install -y tmux vim net-tools ntp policycoreutils-python centos-release-openshift-origin311 epel-release docker git pyOpenSSL && yum upgrade -y 
 
+hostnamectl set-hostname m1.snt.local
+hostnamectl set-hostname m2.snt.local
+hostnamectl set-hostname n1.snt.local
+hostnamectl set-hostname n2.snt.local
+hostnamectl set-hostname n3.snt.local
+
+
 useradd origin 
 passwd origin 
 echo -e 'Defaults:origin !requiretty\norigin ALL = (root) NOPASSWD:ALL' | tee /etc/sudoers.d/openshift 
@@ -31,18 +38,22 @@ firewall-cmd --add-service=ssh --permanent
 firewall-cmd --reload 
 
 #config NTP client
-ntp server <192.168.10.88>  tincker panic 0 
+ntp server <192.168.10.88>  tincker panic 0
+vim /etc/ntp.conf 
 systemctl enable ntpd
 systemctl restart ntpd
 #check ntp server
 ntpq -np
-hostnamectl set-hostname master.soshyant.local
-edit /etc/motd
-http://patorjk.com/software/taag/#p=display&f=Big%20Money-nw&t=Openshift-Node3
+hostnamectl set-hostname 
+vim /etc/motd
+http://patorjk.com/software/taag/#p=display&h=0&v=2&f=ANSI%20Shadow&t=Master2
+
+systemctl start NetworkManager
+systemctl enable NetworkManager
 
 #change dns
-cat /etc/resolv.conf 
-search cluster.local soshyant.local
+vim /etc/resolv.conf 
+search cluster.local snt.local
 nameserver 192.168.110.134
 nameserver 178.22.122.100
 
@@ -52,56 +63,56 @@ nameserver 178.22.122.100
 ssh-keygen -q -N ""
 vim ~/.ssh/config
 
-Host master1.soshyant.local
-    Hostname master1.soshyant.local
+Host m1.snt.local
+    Hostname m1.snt.local
     Port 22
     User origin
-Host master2.soshyant.local
-    Hostname master2.soshyant.local
+Host m2.snt.local
+    Hostname m2.snt.local
     Port 22
     User origin
-Host node1.soshyant.local
-    Hostname node1.soshyant.local
+Host n1.snt.local
+    Hostname n1.snt.local
     Port 22
     User origin
-Host node2.soshyant.local
-    Hostname node2.soshyant.local
+Host n2.snt.local
+    Hostname n2.snt.local
     Port 22
     User origin
-Host node3.soshyant.local
-    Hostname node3.soshyant.local
+Host n3.snt.local
+    Hostname n3.snt.local
     Port 22
     User origin
 
 vim /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-192.168.110.134         node1.soshyant.local
-192.168.110.135         node2.soshyant.local
-192.168.110.136         node3.soshyant.local
-192.168.110.137         master1.soshyant.local
-192.168.110.138         master2.soshyant.local
+192.168.20.151         n1.snt.local
+192.168.20.152         n2.snt.local
+192.168.20.153         n3.snt.local
+192.168.20.149         m1.snt.local
+192.168.20.150         m2.snt.local
 
 chmod 600 ~/.ssh/config
-ssh-copy-id master1.soshyant.local
-ssh-copy-id master2.soshyant.local
-ssh-copy-id master2.soshyant.local
-ssh-copy-id node1.soshyant.local
-ssh-copy-id node2.soshyant.local
-ssh-copy-id node3.soshyant.local
+ssh-copy-id n1.snt.local
+ssh-copy-id n2.snt.local
+ssh-copy-id n3.snt.local
+ssh-copy-id m1.snt.local
+ssh-copy-id m2.snt.local
+
 
 #create lvm and VG
 cfdisk /dev/sdb
  > type 8e
 pvcreate /dev/sdb1
-vgcreate docker /dev/sdb1
+vgcreate docker-vg /dev/sdb1
 
 
 lvmconf --disable-cluster
 systemctl stop docker
 
 vim   /etc/sysconfig/docker-storage-setup
-VG=docker
+VG=docker-vg
 DATA_SIZE=100%VG
 STORAGE_DRIVER=overlay2
 CONTAINER_ROOT_LV_NAME=dockerlv
@@ -114,7 +125,7 @@ docker-storage-setup
   Logical volume "dockerlv" created.
 systemctl start docker && systemctl enable  docker
 #zero reserved block on docker storage
-dxfs_io -x -c "resblks 0" /var/lib/docker
+xfs_io -x -c "resblks 0" /var/lib/docker
 
 #set google docker proxy:
 vim /etc/docker/daemon.json 
@@ -127,6 +138,35 @@ systemctl daemon-reload && systemctl restart docker
 
 
 #pull docker images for openshift:
+cat << EOF > docker_pull.sh
+docker pull docker.io/openshift/origin-node:v3.11.0
+docker pull docker.io/openshift/origin-control-plane:v3.11.0
+docker pull docker.io/openshift/origin-haproxy-router:v3.11
+docker pull docker.io/openshift/origin-haproxy-router:v3.11.0
+docker pull docker.io/openshift/origin-deployer:v3.11.0
+docker pull docker.io/openshift/origin-cli:v3.11
+docker pull docker.io/openshift/origin-pod:v3.11.0
+docker pull docker.io/openshift/origin-template-service-broker:v3.11.0
+docker pull docker.io/openshift/origin-docker-registry:v3.11.0
+docker pull docker.io/openshift/origin-console:v3.11.0
+docker pull docker.io/openshift/origin-service-catalog:v3.11.0
+docker pull docker.io/ansibleplaybookbundle/origin-ansible-service-broker:latest
+docker pull docker.io/openshift/origin-web-console:v3.11.0
+docker pull docker.io/openshift/origin-metrics-deployer:latest
+docker pull docker.io/cockpit/kubernetes:latest
+docker pull quay.io/coreos/cluster-monitoring-operator:v0.1.1
+docker pull quay.io/coreos/prometheus-config-reloader:v0.23.2
+docker pull quay.io/coreos/prometheus-operator:v0.23.2
+docker pull docker.io/openshift/prometheus-alertmanager:v0.15.2
+docker pull docker.io/openshift/prometheus-node-exporter:v0.16.0
+docker pull docker.io/openshift/prometheus:v2.3.2
+docker pull docker.io/grafana/grafana:5.2.1
+docker pull quay.io/coreos/kube-rbac-proxy:v0.3.1
+docker pull quay.io/coreos/etcd:v3.2.22
+docker pull quay.io/coreos/kube-state-metrics:v1.3.1
+docker pull docker.io/openshift/oauth-proxy:v1.1.0
+docker pull quay.io/coreos/configmap-reload:v0.0.1
+EOF
 
 
 chmod +x docker_pull.sh
@@ -166,7 +206,6 @@ openshift_storage_glusterfs_name=storage
 openshift_storage_glusterfs_storageclass=true
 openshift_storage_glusterfs_storageclass_default=false
 openshift_storage_glusterfs_block_deploy=true
-openshift_storage_glusterfs_block_host_vol_size=44
 openshift_storage_glusterfs_block_storageclass=true
 openshift_storage_glusterfs_block_storageclass_default=false
 openshift_metrics_server_install=true
@@ -193,29 +232,34 @@ openshift_metrics_cassandra_nodeselector={"region":"infra"}
 
 
 [masters]
-master1.soshyant.local containerized=false
+m1.snt.local containerized=false
+m2.snt.local containerized=false
 
 [etcd]
-master1.soshyant.local
+m1.snt.local
+m2.snt.local
 
 [nodes]
-master1.soshyant.local openshift_node_group_name='node-config-master-infra' 
-node1.soshyant.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
-node2.soshyant.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
-node3.soshyant.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
+m1.snt.local openshift_node_group_name='node-config-master-infra' 
+m2.snt.local openshift_node_group_name='node-config-master-infra'
+n1.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
+n2.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
+n3.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
 
 
 
 [glusterfs] 
-node1.soshyant.local glusterfs_ip=192.168.110.134  glusterfs_devices='[ "/dev/sdc" ]'
-node2.soshyant.local glusterfs_ip=192.168.110.135  glusterfs_devices='[ "/dev/sdc" ]'
-node3.soshyant.local glusterfs_ip=192.168.110.136  glusterfs_devices='[ "/dev/sdc" ]'
+n1.snt.local glusterfs_ip=192.168.110.134  glusterfs_devices='[ "/dev/sdc" ]'
+n2.snt.local glusterfs_ip=192.168.110.135  glusterfs_devices='[ "/dev/sdc" ]'
+n3.snt.local glusterfs_ip=192.168.110.136  glusterfs_devices='[ "/dev/sdc" ]'
+
 
 
 
 ---------------------------------------------------------------------------
 
 
+ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/openshift-web-console/config.yml
 ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
 
 #https://github.com/openshift/openshift-ansible/issues/10412
@@ -357,7 +401,7 @@ ansible-playbook -i /etc/ansible/hosts  playbooks/openshift-glusterfs/config.yml
 ################################## Enable Metrics #################################################
 
 
-ansible-playbook -i /etc/ansible/hosts  playbooks/openshift-metrics/config.yml -e openshift_metrics_install_metrics=True -e openshift_metrics_start_cluster=True -e openshift_metrics_duration=1 -e openshift_metrics_hawkular_hostname=hawkular-metrics.apps.soshyant.local
+ansible-playbook -i /etc/ansible/hosts  playbooks/openshift-metrics/config.yml -e openshift_metrics_install_metrics=True -e openshift_metrics_start_cluster=True -e openshift_metrics_duration=1 -e openshift_metrics_hawkular_hostname=hawkular-metrics.apps.snt.local
 
 
 

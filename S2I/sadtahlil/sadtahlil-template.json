@@ -1,0 +1,435 @@
+{
+    "kind": "Template",
+    "apiVersion": "template.openshift.io/v1",
+    "metadata": {
+        "name": "sadtahlil",
+        "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "build.openshift.io/v1",
+            "metadata": {
+                "name": "sadtahlil",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "GitHub",
+                        "github": {
+                            "secret": "8s4IyDelXGbSkbYstV8n"
+                        }
+                    },
+                    {
+                        "type": "Generic",
+                        "generic": {
+                            "secret": "K4GS4t5BQJih6XBz73PH"
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    }
+                ],
+                "runPolicy": "Serial",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "http://gogs-persistent.apps.snt.local/cicd/sadtahlil.git"
+                    }
+                },
+                "strategy": {
+                    "type": "Source",
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "registry.centos.org/dotnet/dotnet-21-centos7:latest"
+                        },
+                        "env": [
+                            {
+                                "name": "ASPNETCORE_URLS",
+                                "value": "http://*:8080,https://*:8090"
+                            },
+                            {
+                                "name": "DOTNET_ASSEMBLY_NAME",
+                                "value": "Soshyant.Repo.SadTahli.WebApi"
+                            },
+                            {
+                                "name": "DOTNET_STARTUP_PROJECT",
+                                "value": "100Tahlil/SadTahli.WebApi/src/SadTahli.WebApi.csproj"
+                            },
+                            {
+                                "name": "httpport",
+                                "value": "8080"
+                            },
+                            {
+                                "name": "httpsport",
+                                "value": "8090"
+                            }
+                        ]
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "sadtahlil:latest"
+                    }
+                },
+                "resources": {},
+                "postCommit": {},
+                "nodeSelector": null,
+                "successfulBuildsHistoryLimit": 5,
+                "failedBuildsHistoryLimit": 5
+            },
+            "status": {
+                "lastVersion": 0
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "apps.openshift.io/v1",
+            "metadata": {
+                "name": "sadtahlil",
+                "generation": 2,
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Rolling",
+                    "rollingParams": {
+                        "updatePeriodSeconds": 1,
+                        "intervalSeconds": 1,
+                        "timeoutSeconds": 600,
+                        "maxUnavailable": "25%",
+                        "maxSurge": "25%"
+                    },
+                    "resources": {},
+                    "activeDeadlineSeconds": 21600
+                },
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "sadtahlil"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "namespace": "cicd",
+                                "name": "sadtahlil:latest"
+                            }
+                            
+                        }
+                    }
+                ],
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "test": false,
+                "selector": {
+                    "app": "sadtahlil",
+                    "deploymentconfig": "sadtahlil"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "sadtahlil",
+                            "deploymentconfig": "sadtahlil"
+                        },
+                        "annotations": {
+                            "openshift.io/generated-by": "OpenShiftNewApp"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "sadtahlil",
+                                "image": "docker-registry.default.svc:5000/cicd/sadtahlil@@sha256:b280fa8a8ad35b1bb5b7e166ced917b408282a3ec0ab9a1afc0a72d854c9ab8d",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always"
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30,
+                        "dnsPolicy": "ClusterFirst",
+                        "securityContext": {},
+                        "schedulerName": "default-scheduler"
+                    }
+                }
+            },
+            "status": {
+                "latestVersion": 0,
+                "observedGeneration": 0,
+                "replicas": 0,
+                "updatedReplicas": 0,
+                "availableReplicas": 0,
+                "unavailableReplicas": 0
+            }
+        },
+        {
+            "kind": "ReplicationController",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "sadtahlil-1",
+                "generation": 2,
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil",
+                    "openshift.io/deployment-config.name": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/deployer-pod.completed-at": "2019-04-29 11:48:04 +0000 UTC",
+                    "openshift.io/deployer-pod.created-at": "2019-04-29 11:47:59 +0000 UTC",
+                    "openshift.io/deployer-pod.name": "sadtahlil-1-deploy",
+                    "openshift.io/deployment-config.latest-version": "1",
+                    "openshift.io/deployment-config.name": "sadtahlil",
+                    "openshift.io/deployment.phase": "Complete",
+                    "openshift.io/deployment.replicas": "1",
+                    "openshift.io/deployment.status-reason": "config change",
+                    "openshift.io/encoded-deployment-config": "{\"kind\":\"DeploymentConfig\",\"apiVersion\":\"apps.openshift.io/v1\",\"metadata\":{\"name\":\"sadtahlil\",\"namespace\":\"sadtahlil\",\"selfLink\":\"/apis/apps.openshift.io/v1/namespaces/sadtahlil/deploymentconfigs/sadtahlil\",\"uid\":\"750162a5-6a74-11e9-b98c-005056af32be\",\"resourceVersion\":\"286951\",\"generation\":2,\"creationTimestamp\":\"2019-04-29T11:46:42Z\",\"labels\":{\"app\":\"sadtahlil\"},\"annotations\":{\"openshift.io/generated-by\":\"OpenShiftNewApp\"}},\"spec\":{\"strategy\":{\"type\":\"Rolling\",\"rollingParams\":{\"updatePeriodSeconds\":1,\"intervalSeconds\":1,\"timeoutSeconds\":600,\"maxUnavailable\":\"25%\",\"maxSurge\":\"25%\"},\"resources\":{},\"activeDeadlineSeconds\":21600},\"triggers\":[{\"type\":\"ConfigChange\"},{\"type\":\"ImageChange\",\"imageChangeParams\":{\"automatic\":true,\"containerNames\":[\"sadtahlil\"],\"from\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"sadtahlil\",\"name\":\"sadtahlil:latest\"},\"lastTriggeredImage\":\"docker-registry.default.svc:5000/sadtahlil/sadtahlil@sha256:dd9c44cae9aa1d07bf7d0d02056544512845f5e09b125718493bf5113a6379fa\"}}],\"replicas\":1,\"revisionHistoryLimit\":10,\"test\":false,\"selector\":{\"app\":\"sadtahlil\",\"deploymentconfig\":\"sadtahlil\"},\"template\":{\"metadata\":{\"creationTimestamp\":null,\"labels\":{\"app\":\"sadtahlil\",\"deploymentconfig\":\"sadtahlil\"},\"annotations\":{\"openshift.io/generated-by\":\"OpenShiftNewApp\"}},\"spec\":{\"containers\":[{\"name\":\"sadtahlil\",\"image\":\"docker-registry.default.svc:5000/sadtahlil/sadtahlil@sha256:dd9c44cae9aa1d07bf7d0d02056544512845f5e09b125718493bf5113a6379fa\",\"ports\":[{\"containerPort\":8080,\"protocol\":\"TCP\"}],\"resources\":{},\"terminationMessagePath\":\"/dev/termination-log\",\"terminationMessagePolicy\":\"File\",\"imagePullPolicy\":\"Always\"}],\"restartPolicy\":\"Always\",\"terminationGracePeriodSeconds\":30,\"dnsPolicy\":\"ClusterFirst\",\"securityContext\":{},\"schedulerName\":\"default-scheduler\"}}},\"status\":{\"latestVersion\":1,\"observedGeneration\":1,\"replicas\":0,\"updatedReplicas\":0,\"availableReplicas\":0,\"unavailableReplicas\":0,\"details\":{\"message\":\"config change\",\"causes\":[{\"type\":\"ConfigChange\"}]},\"conditions\":[{\"type\":\"Available\",\"status\":\"False\",\"lastUpdateTime\":\"2019-04-29T11:46:42Z\",\"lastTransitionTime\":\"2019-04-29T11:46:42Z\",\"message\":\"Deployment config does not have minimum availability.\"}]}}\n"
+                },
+                "ownerReferences": [
+                    {
+                        "apiVersion": "apps.openshift.io/v1",
+                        "kind": "DeploymentConfig",
+                        "name": "sadtahlil",
+                        "uid": "750162a5-6a74-11e9-b98c-005056af32be",
+                        "controller": true
+                    }
+                ]
+            },
+            "spec": {
+                "replicas": 1,
+                "selector": {
+                    "app": "sadtahlil",
+                    "deployment": "sadtahlil-1",
+                    "deploymentconfig": "sadtahlil"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "sadtahlil",
+                            "deployment": "sadtahlil-1",
+                            "deploymentconfig": "sadtahlil"
+                        },
+                        "annotations": {
+                            "openshift.io/deployment-config.latest-version": "1",
+                            "openshift.io/deployment-config.name": "sadtahlil",
+                            "openshift.io/deployment.name": "sadtahlil-1",
+                            "openshift.io/generated-by": "OpenShiftNewApp"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "sadtahlil",
+                                "image": "docker-registry.default.svc:5000/cicd/sadtahlil@sha256:b280fa8a8ad35b1bb5b7e166ced917b408282a3ec0ab9a1afc0a72d854c9ab8d",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "imagePullPolicy": "Always"
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "terminationGracePeriodSeconds": 30,
+                        "dnsPolicy": "ClusterFirst",
+                        "securityContext": {},
+                        "schedulerName": "default-scheduler"
+                    }
+                }
+            },
+            "status": {
+                "replicas": 0
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "sadtahlil",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8080-tcp",
+                        "protocol": "TCP",
+                        "port": 8080,
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "app": "sadtahlil",
+                    "deploymentconfig": "sadtahlil"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        },
+        {
+            "kind": "Route",
+            "apiVersion": "route.openshift.io/v1",
+            "metadata": {
+                "name": "sadtahlil",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/host.generated": "true"
+                }
+            },
+            "spec": {
+                "host": "sadtahlil-sadtahlil.apps.snt.local",
+                "to": {
+                    "kind": "Service",
+                    "name": "sadtahlil",
+                    "weight": 100
+                },
+                "port": {
+                    "targetPort": "8080-tcp"
+                },
+                "wildcardPolicy": "None"
+            },
+            "status": {
+                "ingress": [
+                    {
+                        "host": "sadtahlil-sadtahlil.apps.snt.local",
+                        "routerName": "router",
+                        "conditions": [
+                            {
+                                "type": "Admitted",
+                                "status": "True",
+                                "lastTransitionTime": "2019-04-29T11:47:53Z"
+                            }
+                        ],
+                        "wildcardPolicy": "None"
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "image.openshift.io/v1",
+            "metadata": {
+                "name": "dotnet-21-centos7",
+                "generation": 2,
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewApp",
+                    "openshift.io/image.dockerRepositoryCheck": "2019-04-29T11:46:43Z"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags": [
+                    {
+                        "name": "latest",
+                        "annotations": {
+                            "openshift.io/imported-from": "registry.centos.org/dotnet/dotnet-21-centos7:latest"
+                        },
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "docker-registry.default.svc:5000/sadtahlil/dotnet-21-centos7:latest"
+                        },
+                        "generation": 2,
+                        "importPolicy": {},
+                        "referencePolicy": {
+                            "type": "Source"
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "image.openshift.io/v1",
+            "metadata": {
+                "name": "sadtahlil",
+                "generation": 1,
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "sadtahlil"
+                },
+                "annotations": {
+                    "openshift.io/generated-by": "OpenShiftNewApp"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                },
+                "tags": [
+                    {
+                        "name": "latest",
+                        "annotations": null,
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "docker-registry.default.svc:5000/cicd/sadtahlil:latest"
+                        },
+                        "generation": null,
+                        "importPolicy": {},
+                        "referencePolicy": {
+                            "type": ""
+                        }
+                    }
+                ]
+            },
+            "status": {
+                "dockerImageRepository": ""
+            }
+        }
+    ]
+}

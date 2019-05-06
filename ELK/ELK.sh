@@ -61,7 +61,7 @@ curl -s localhost:9200/_nodes | jq ._nodes
 
 fg
 #Cntl+C
-oc expose svc elasticsearch
+#oc expose svc elasticsearch
 
 #KIBANA
 oc create -f kibana-svc.yaml
