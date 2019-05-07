@@ -1,3 +1,63 @@
+mkdir aerospike-broker-farabixo
+cd aerospike-broker-farabixo
+git clone https://github.com/aerospike/aerospike-kubernetes.git
+cd aerospike-kubernetes/
+
+
+
+export APP_NAME=broker
+export NAMESPACE=aerospike-broker-farabixo
+export AEROSPIKE_NODES=3
+export AEROSPIKE_NAMESPACE=broker
+export AEROSPIKE_REPL=2
+export AEROSPIKE_MEM=1
+export AEROSPIKE_TTL=0
+
+cat manifests/* | envsubst > expanded.yaml
+
+vim expanded.yaml
+ storageClassName: glusterfs-storage
+
+
+oc create -f expanded.yaml
+oc project aerospike-broker-farabixo
+oc create configmap aerospike-conf -n aerospike-broker-farabixo --from-file=configs/
+oc adm policy add-role-to-user admin admin -n aerospike-broker-farabixo
+oc adm policy add-scc-to-user anyuid -z default
+ 
+
+vim service-expose.yaml
+ 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: broker
+  name: as-cluster-1
+  selfLink: /api/v1/namespaces/aerospike-test/services/aerospike
+  namespace: aerospike-broker-farabixo
+spec:
+  externalIPs:
+    - 192.168.20.151
+    - 192.168.20.152
+    - 192.168.20.153
+  ports:
+    - name: service
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: broker
+
+oc create -f service-expose.yaml
+
+
+
+
+
+
+
+
 git clone https://github.com/travelaudience/aerospike-operator.git
 cd aerospike-operator
 vim +154 docs/examples/00-prereqs.yml
@@ -48,3 +108,5 @@ iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 3002 -j ACCEPT
 
 iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 9145 -j ACCEPT
 iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 3002 -j ACCEPT
+
+
