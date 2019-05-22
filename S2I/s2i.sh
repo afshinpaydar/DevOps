@@ -24,6 +24,15 @@ oc new-app --name=sadtahlil  'registry.centos.org/dotnet/dotnet-21-centos7:lates
 oc expose svc sadtahlil
 
 
+oc new-project marketwatch1
+oc adm policy add-role-to-user admin admin -n marketwatch1
+oc new-app --name=marketwatch  'registry.centos.org/dotnet/dotnet-21-centos7:latest~http://gogs-persistent.apps.snt.local/cicd/marketwatch.git' --build-env  DOTNET_STARTUP_PROJECT=MarketWatch.WebApi/src/MarketWatch.WebApi.csproj  --build-env  DOTNET_ASSEMBLY_NAME=Soshyant.Repo.MarketWatch.WebApi --build-env  httpport=8080 --build-env  httpsport=8090 --build-env  ASPNETCORE_URLS=http://*:8080,https://*:8090
+oc expose svc marketwatch
+
+
+
+
+
 
 oc new-project emc
 oc adm policy add-role-to-user admin admin -n emc
@@ -204,17 +213,17 @@ oc adm policy add-scc-to-user anyuid -z default
 
 #Wait for jenkins up and running
 oc create -f sadtahlil-pipeline.yaml
-
 oc start-build sadtahlil-pipeline
 
 
-
+mkdir marketwatch
+cd marketwatch/
+vim marketwatch-pipeline.yaml
+oc create -f marketwatch-pipeline.yaml
 ---------------------------------------------------------------------------------------------------------------------
 
 
-oc new-project test
 
-oc adm policy add-role-to-user admin admin -n test
 
 oc new-app -e \
 INSTALL_PLUGINS=tfs \

@@ -1,18 +1,13 @@
 kind: "BuildConfig"
 apiVersion: "v1"
 metadata:
-  name: "sadtahlil-pipeline"
+  name: "marketwatch-pipeline"
 spec:
   strategy:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-// path of the template to use
-def templatePath = 'http://gogs-persistent.apps.snt.local/cicd/templates/raw/master/sadtahlil-template.json'
-// name of the template that will be created
-def templateName = 'sadtahlil'
-// NOTE, the "pipeline" directive/closure from the declarative pipeline syntax needs to include, or be nested outside,
-// and "openshift" directive/closure from the OpenShift Client Plugin for Jenkins.  Otherwise, the declarative pipeline engine
-// will not be fully engaged.
+def templatePath = 'http://gogs-persistent.apps.snt.local/cicd/templates/raw/master/marketwatch-template.json'
+def templateName = 'marketwatch'
 pipeline {
     agent any
     options {
@@ -34,7 +29,7 @@ pipeline {
         }
         stage('checkout'){
             steps {
-                checkout([$class: 'TeamFoundationServerScm', credentialsConfigurer: [$class: 'AutomaticCredentialsConfigurer'], projectPath: '$/ThirdParty', serverUrl: 'http://192.168.168.10:1397/tfs/SoshyantRepoTeam', useOverwrite: true, useUpdate: true, workspaceName: '${JOB_NAME}-${NODE_NAME}-F'])
+                checkout([$class: 'TeamFoundationServerScm', credentialsConfigurer: [$class: 'AutomaticCredentialsConfigurer'], projectPath: '$/Broker Solutions', serverUrl: 'http://192.168.168.10:1397/tfs/SoshyantRepoTeam', useOverwrite: true, useUpdate: true, workspaceName: '${JOB_NAME}-${NODE_NAME}-F'])
                 sh '''
 		        cat << EOF > ./100Tahlil/NuGet.Config
 <configuration>
@@ -48,7 +43,7 @@ EOF
 		        sh "git init"
 		        sh "git add ."
                 sh 'git commit -m "build# $BUILD_NUMBER"'
-                sh "git  push  http://cicd:S0shyant123@gogs-persistent.apps.snt.local/cicd/sadtahlil.git master -f ; exit 0"
+                sh "git  push  http://cicd:S0shyant123@gogs-persistent.apps.snt.local/cicd/marketwatch.git master -f ; exit 0"
             }
         }
         stage('cleanup') {
@@ -65,17 +60,17 @@ EOF
                             if (openshift.selector("imagestream").exists()) {
                                 openshift.selector("imagestream").delete()
                             }
-                            if (openshift.selector("svc","sadtahlil").exists()) {
-                                openshift.selector("svc","sadtahlil").delete()
+                            if (openshift.selector("svc","marketwatch").exists()) {
+                                openshift.selector("svc","marketwatch").delete()
                             }
-                            if (openshift.selector("bc","sadtahlil").exists()) {
-                                openshift.selector("bc","sadtahlil").delete()
+                            if (openshift.selector("bc","marketwatch").exists()) {
+                                openshift.selector("bc","marketwatch").delete()
                             }
-                            if (openshift.selector("dc","sadtahlil").exists()) {
-                                openshift.selector("dc","sadtahlil").delete()
+                            if (openshift.selector("dc","marketwatch").exists()) {
+                                openshift.selector("dc","marketwatch").delete()
                             }
-                            if (openshift.selector("routes","sadtahlil").exists()) {
-                                openshift.selector("routes","sadtahlil").delete()
+                            if (openshift.selector("routes","marketwatch").exists()) {
+                                openshift.selector("routes","marketwatch").delete()
                             }
                            
                         }
@@ -139,4 +134,3 @@ EOF
         } // stage
     } // stages
 } // pipeline
-    type: JenkinsPipeline

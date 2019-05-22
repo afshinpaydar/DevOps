@@ -58,6 +58,10 @@ oc create -f service-expose.yaml
 
 
 
+
+
+
+
 git clone https://github.com/travelaudience/aerospike-operator.git
 cd aerospike-operator
 vim +154 docs/examples/00-prereqs.yml

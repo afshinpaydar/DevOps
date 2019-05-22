@@ -2,7 +2,7 @@
     "kind": "Template",
     "apiVersion": "template.openshift.io/v1",
     "metadata": {
-        "name": "${NAME}",
+        "name": "marketwatch",
         "creationTimestamp": null
     },
     "objects": [
@@ -10,10 +10,10 @@
             "kind": "BuildConfig",
             "apiVersion": "build.openshift.io/v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch",
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "${NAME}"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/generated-by": "OpenShiftNewApp"
@@ -45,7 +45,7 @@
                 "source": {
                     "type": "Git",
                     "git": {
-                        "uri": "http://gogs-persistent.apps.snt.local/${NAMESPACE}/sadtahlil.git"
+                        "uri": "http://gogs-persistent.apps.snt.local/cicd/marketwatch.git"
                     }
                 },
                 "strategy": {
@@ -62,11 +62,11 @@
                             },
                             {
                                 "name": "DOTNET_ASSEMBLY_NAME",
-                                "value": "Soshyant.Repo.SadTahli.WebApi"
+                                "value": "Soshyant.Repo.marketwatch.WebApi"
                             },
                             {
                                 "name": "DOTNET_STARTUP_PROJECT",
-                                "value": "100Tahlil/SadTahli.WebApi/src/SadTahli.WebApi.csproj"
+                                "value": "marketwatch/marketwatch.WebApi/src/marketwatch.WebApi.csproj"
                             },
                             {
                                 "name": "httpport",
@@ -82,7 +82,7 @@
                 "output": {
                     "to": {
                         "kind": "ImageStreamTag",
-                        "name": "${NAME}:latest"
+                        "name": "marketwatch:latest"
                     }
                 },
                 "resources": {},
@@ -90,17 +90,20 @@
                 "nodeSelector": null,
                 "successfulBuildsHistoryLimit": 5,
                 "failedBuildsHistoryLimit": 5
+            },
+            "status": {
+                "lastVersion": 0
             }
         },
         {
             "kind": "DeploymentConfig",
             "apiVersion": "apps.openshift.io/v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch",
                 "generation": 2,
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "sadtahlil"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/generated-by": "OpenShiftNewApp"
@@ -128,12 +131,12 @@
                         "imageChangeParams": {
                             "automatic": true,
                             "containerNames": [
-                                "sadtahlil"
+                                "marketwatch"
                             ],
                             "from": {
                                 "kind": "ImageStreamTag",
-                                "namespace": "${NAMESPACE}",
-                                "name": "${NAME}:latest"
+                                "namespace": "cicd",
+                                "name": "marketwatch:latest"
                             }
                             
                         }
@@ -143,15 +146,15 @@
                 "revisionHistoryLimit": 10,
                 "test": false,
                 "selector": {
-                    "app": "${NAME}",
-                    "deploymentconfig": "${NAME}"
+                    "app": "marketwatch",
+                    "deploymentconfig": "marketwatch"
                 },
                 "template": {
                     "metadata": {
                         "creationTimestamp": null,
                         "labels": {
-                            "app": "${NAME}",
-                            "deploymentconfig": "${NAME}"
+                            "app": "marketwatch",
+                            "deploymentconfig": "marketwatch"
                         },
                         "annotations": {
                             "openshift.io/generated-by": "OpenShiftNewApp"
@@ -160,8 +163,8 @@
                     "spec": {
                         "containers": [
                             {
-                                "name": "${NAME}",
-                                "image": "docker-registry.default.svc:5000/${NAMESPACE}/sadtahlil@@sha256:b280fa8a8ad35b1bb5b7e166ced917b408282a3ec0ab9a1afc0a72d854c9ab8d",
+                                "name": "marketwatch",
+                                "image": "docker-registry.default.svc:5000/cicd/marketwatch",
                                 "ports": [
                                     {
                                         "containerPort": 8080,
@@ -195,19 +198,19 @@
             "kind": "ReplicationController",
             "apiVersion": "v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch-1",
                 "generation": 2,
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "sadtahlil",
-                    "openshift.io/deployment-config.name": "sadtahlil"
+                    "app": "marketwatch",
+                    "openshift.io/deployment-config.name": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/deployer-pod.completed-at": "2019-04-29 11:48:04 +0000 UTC",
                     "openshift.io/deployer-pod.created-at": "2019-04-29 11:47:59 +0000 UTC",
-                    "openshift.io/deployer-pod.name": "sadtahlil-1-deploy",
+                    "openshift.io/deployer-pod.name": "marketwatch-deploy",
                     "openshift.io/deployment-config.latest-version": "1",
-                    "openshift.io/deployment-config.name": "sadtahlil",
+                    "openshift.io/deployment-config.name": "marketwatch",
                     "openshift.io/deployment.phase": "Complete",
                     "openshift.io/deployment.replicas": "1",
                     "openshift.io/deployment.status-reason": "config change",
@@ -217,7 +220,7 @@
                     {
                         "apiVersion": "apps.openshift.io/v1",
                         "kind": "DeploymentConfig",
-                        "name": "${NAME}",
+                        "name": "marketwatch",
                         "uid": "750162a5-6a74-11e9-b98c-005056af32be",
                         "controller": true
                     }
@@ -226,30 +229,30 @@
             "spec": {
                 "replicas": 1,
                 "selector": {
-                    "app": "${NAME}",
-                    "deployment": "${NAME}",
-                    "deploymentconfig": "${NAME}"
+                    "app": "marketwatch",
+                    "deployment": "marketwatch-1",
+                    "deploymentconfig": "marketwatch"
                 },
                 "template": {
                     "metadata": {
                         "creationTimestamp": null,
                         "labels": {
-                            "app": "${NAME}",
-                            "deployment": "${NAME}",
-                            "deploymentconfig": "${NAME}"
+                            "app": "marketwatch",
+                            "deployment": "marketwatch-1",
+                            "deploymentconfig": "marketwatch"
                         },
                         "annotations": {
                             "openshift.io/deployment-config.latest-version": "1",
-                            "openshift.io/deployment-config.name": "${NAME}",
-                            "openshift.io/deployment.name": "${NAME}",
+                            "openshift.io/deployment-config.name": "marketwatch",
+                            "openshift.io/deployment.name": "marketwatch-1",
                             "openshift.io/generated-by": "OpenShiftNewApp"
                         }
                     },
                     "spec": {
                         "containers": [
                             {
-                                "name": "${NAME}",
-                                "image": "docker-registry.default.svc:5000/${NAMESPACE}/sadtahlil@sha256:b280fa8a8ad35b1bb5b7e166ced917b408282a3ec0ab9a1afc0a72d854c9ab8d",
+                                "name": "marketwatch",
+                                "image": "docker-registry.default.svc:5000/cicd/marketwatch",
                                 "ports": [
                                     {
                                         "containerPort": 8080,
@@ -278,10 +281,10 @@
             "kind": "Service",
             "apiVersion": "v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch",
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "sadtahlil"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/generated-by": "OpenShiftNewApp"
@@ -297,8 +300,8 @@
                     }
                 ],
                 "selector": {
-                    "app": "${NAME}",
-                    "deploymentconfig": "${NAME}"
+                    "app": "marketwatch",
+                    "deploymentconfig": "marketwatch"
                 },
                 "type": "ClusterIP",
                 "sessionAffinity": "None"
@@ -311,20 +314,20 @@
             "kind": "Route",
             "apiVersion": "route.openshift.io/v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch",
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "${NAME}"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/host.generated": "true"
                 }
             },
             "spec": {
-                "host": "sadtahlil-sadtahlil.apps.snt.local",
+                "host": "marketwatch-marketwatch.apps.snt.local",
                 "to": {
                     "kind": "Service",
-                    "name": "${NAME}",
+                    "name": "marketwatch",
                     "weight": 100
                 },
                 "port": {
@@ -335,7 +338,7 @@
             "status": {
                 "ingress": [
                     {
-                        "host": "sadtahlil-sadtahlil.apps.snt.local",
+                        "host": "marketwatch-marketwatch.apps.snt.local",
                         "routerName": "router",
                         "conditions": [
                             {
@@ -357,7 +360,7 @@
                 "generation": 2,
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "sadtahlil"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/generated-by": "OpenShiftNewApp",
@@ -376,7 +379,7 @@
                         },
                         "from": {
                             "kind": "DockerImage",
-                            "name": "docker-registry.default.svc:5000/sadtahlil/dotnet-21-centos7:latest"
+                            "name": "docker-registry.default.svc:5000/marketwatch/dotnet-21-centos7:latest"
                         },
                         "generation": 2,
                         "importPolicy": {},
@@ -394,11 +397,11 @@
             "kind": "ImageStream",
             "apiVersion": "image.openshift.io/v1",
             "metadata": {
-                "name": "${NAME}",
+                "name": "marketwatch",
                 "generation": 1,
                 "creationTimestamp": null,
                 "labels": {
-                    "app": "sadtahlil"
+                    "app": "marketwatch"
                 },
                 "annotations": {
                     "openshift.io/generated-by": "OpenShiftNewApp"
@@ -414,7 +417,7 @@
                         "annotations": null,
                         "from": {
                             "kind": "DockerImage",
-                            "name": "docker-registry.default.svc:5000/${NAMESPACE}/sadtahlil:latest"
+                            "name": "docker-registry.default.svc:5000/cicd/marketwatch:latest"
                         },
                         "generation": null,
                         "importPolicy": {},
@@ -428,21 +431,5 @@
                 "dockerImageRepository": ""
             }
         }
-    ],
-    "parameters": [
-        {
-            "name": "NAME",
-            "displayName": "Name",
-            "description": "The name assigned to all of the frontend objects defined in this template.",
-            "required": true,
-            "value": "sadtahlil"
-          },
-          {
-            "name": "NAMESPACE",
-            "displayName": "Namespace",
-            "description": "The OpenShift Namespace where the ImageStream resides.",
-            "required": true,
-            "value": "cicd"
-          }
-        ]
+    ]
 }

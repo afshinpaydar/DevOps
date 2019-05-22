@@ -42,7 +42,7 @@ vim example-nats.yaml
 apiVersion: "nats.io/v1alpha2"
 kind: "NatsCluster"
 metadata:
-  name: "example-nats"
+  name: "farabixo-nats"
 spec:
   size: 3
 
@@ -61,11 +61,11 @@ vim StreamingCluster.yaml
 apiVersion: "streaming.nats.io/v1alpha1"
 kind: "NatsStreamingCluster"
 metadata:
-  name: "example-stan"
+  name: "farabixo-stan"
   namespace: "farabixo-nats-stream-broker"
 spec:
   size: 3
-  natsSvc: "example-nats"
+  natsSvc: "farabixo-nats"
 
 
 oc apply -f StreamingCluster.yaml
