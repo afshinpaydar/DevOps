@@ -195,6 +195,7 @@ glusterfs
 [OSEv3:vars]
 ansible_ssh_user=origin
 ansible_become=true
+openshift_set_node_ip=true
 openshift_deployment_type=origin
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 openshift_master_default_subdomain=apps.soshyant.local
@@ -240,11 +241,11 @@ m1.snt.local
 m2.snt.local
 
 [nodes]
-m1.snt.local openshift_node_group_name='node-config-master-infra' 
-m2.snt.local openshift_node_group_name='node-config-master-infra'
-n1.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
-n2.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
-n3.snt.local openshift_node_group_name='node-config-compute' openshift_schedulable=True
+m1.snt.local openshift_ip=<IP ADDR> openshift_node_group_name='node-config-master-infra' 
+m2.snt.local openshift_ip=<IP ADDR> openshift_node_group_name='node-config-master-infra'
+n1.snt.local openshift_ip=<IP ADDR> openshift_node_group_name='node-config-compute' openshift_schedulable=True
+n2.snt.local openshift_ip=<IP ADDR> openshift_node_group_name='node-config-compute' openshift_schedulable=True
+n3.snt.local openshift_ip=<IP ADDR> openshift_node_group_name='node-config-compute' openshift_schedulable=True
 
 
 
