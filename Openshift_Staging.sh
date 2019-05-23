@@ -198,7 +198,7 @@ ansible_become=true
 openshift_set_node_ip=true
 openshift_deployment_type=origin
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
-openshift_master_default_subdomain=apps.soshyant.local
+openshift_master_default_subdomain=apps.test.local
 openshift_docker_insecure_registries=172.30.0.0/16
 openshift_check_min_host_memory_gb=6
 openshift_check_min_host_disk_gb=10
@@ -214,7 +214,7 @@ openshift_metrics_server_install=true
 #Mertics Parameters
 openshift_metrics_duration=1
 openshift_metrics_start_cluster=True
-openshift_metrics_hawkular_hostname=hawkular-metrics.soshyant.local
+openshift_metrics_hawkular_hostname=hawkular-metrics.test.local
 openshift_metrics_cassandra_storage_type=pv
 
 openshift_metrics_cassandra_limits_memory=2Gi
@@ -269,7 +269,7 @@ ansible-playbook /usr/share/ansible/openshift-ansible/playbooks/prerequisites.ym
 
 #on All masters
 vim  /etc/dnsmasq.conf 
-address=/apps.soshyant.local/192.168.110.137
+address=/apps.test.local/192.168.110.137
 vim /etc/dnsmasq.d/origin-upstream-dns.conf
 server=94.232.174.194
 
@@ -278,7 +278,7 @@ vim /etc/dnsmasq.d/origin-dns.conf
 except-interface=lo
 strict-order
 domain-needed
-local=/soshyant.local/
+local=/test.local/
 bind-dynamic
 log-queries
 -----------------
