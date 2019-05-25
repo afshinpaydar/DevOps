@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+data:
+  nginx.conf: |
+    worker_processes auto;
+    pid /run/nginx.pid;
+    worker_rlimit_nofile 60000;
+    include /usr/share/nginx/modules/*.conf;
+
+    events {
+      worker_connections 10240;
+    }
+    http {
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    default_type        application/octet-stream;
+
+    include /etc/nginx/conf.d/*.conf;
+
+
+    upstream api_hosts {
+        server 192.168.20.154:2132 max_fails=3 fail_timeout=30s;
+        server 192.168.20.154:2131 max_fails=3 fail_timeout=30s;
+        server 192.168.20.154:2130 max_fails=3 fail_timeout=30s;
+        server 192.168.20.154:2129 max_fails=3 fail_timeout=30s;
+     }
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  _;
+        root         /usr/share/nginx/html;
+        include /etc/nginx/default.d/*.conf;
+        location / {
+          proxy_pass http://api_hosts/$uri;
+         }
+
+        error_page 404 /404.html;
+          location = /40x.html {
+        }
+        error_page 500 502 503 504 /50x.html;
+          location = /50x.html {
+        }
+      }
+    }
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx # mount nginx-conf volumn to /etc/nginx
+          readOnly: true
+          name: nginx-conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx
