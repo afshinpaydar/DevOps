@@ -1,0 +1,12 @@
+oc new-project oms-server-haproxy --display-name="OMS Server HAProxy"
+oc adm policy add-role-to-user admin admin -n oms-server-haproxy
+oc adm policy add-scc-to-user anyuid -z default
+oc create -f oms-server-haproxy.yaml
+oc expose svc oms-server
+
+-------------------------------------------------------
+oc new-project oms-manager-server-haproxy --display-name="OMS Manager Server HAProxy"
+oc adm policy add-role-to-user admin admin -n oms-manager-server-haproxy
+oc adm policy add-scc-to-user anyuid -z default
+oc create -f oms-manager-server-haproxy.yaml
+oc expose svc oms-manager-server
