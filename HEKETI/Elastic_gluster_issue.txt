@@ -1,0 +1,44 @@
+#Based on this bug https://bugzilla.redhat.com/show_bug.cgi?id=1379568
+
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.quick-read off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.io-cache off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.write-behind off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.stat-prefetch off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.read-ahead off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.readdir-ahead off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.open-behind off
+gluster volume set vol_f8ed1525823760a0ae0b93936037068c performance.client-io-threads off
+
+
+oc get pod -n glusterfs | grep glusterfs-storage
+glusterfs-storage-c9r29                       1/1       Running   0          20h
+glusterfs-storage-x52dh                       1/1       Running   0          20h
+glusterfs-storage-z2554                       1/1       Running   0          20h
+
+oc exec -it glusterfs-storage-c9r29 -n glusterfs bash
+
+gluster volume info | grep 'Volume Name'
+Volume Name: heketidbstorage
+Volume Name: vol_11995e155cbc12c14a062830fe120adc
+Volume Name: vol_1b673ed149e0dad45bed86edc94a1197
+Volume Name: vol_399c1c41c70a5083e1fbff1c1059cb66
+Volume Name: vol_5b0da9276cea87f08d12984113facc83
+Volume Name: vol_b19f01a989301e8ebc11d971a1f9d8a1
+Volume Name: vol_b5b0488233e4c5b75716b63b81c1f7ce
+Volume Name: vol_bb6fc32266cbc0d03a6681bce5c383aa
+Volume Name: vol_bf6ac07ef463c7c2db72c1e5efa544b6
+Volume Name: vol_c9171c755ccf8cec8c0580556394685e
+Volume Name: vol_f8ed1525823760a0ae0b93936037068c
+
+ 
+gluster volume set <per all above Volume Name> performance.quick-read off
+gluster volume set <per all above Volume Name> performance.io-cache off
+gluster volume set <per all above Volume Name> performance.write-behind off
+gluster volume set <per all above Volume Name> performance.stat-prefetch off
+gluster volume set <per all above Volume Name> performance.read-ahead off
+gluster volume set <per all above Volume Name> performance.readdir-ahead off
+gluster volume set <per all above Volume Name> performance.open-behind off
+gluster volume set <per all above Volume Name> performance.client-io-threads off
+
+
+
