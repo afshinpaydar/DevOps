@@ -31,8 +31,8 @@ Volume Name: vol_c9171c755ccf8cec8c0580556394685e
 Volume Name: vol_f8ed1525823760a0ae0b93936037068c
 
  
-gluster volume set <per all above Volume Name> performance.quick-read off
-gluster volume set <per all above Volume Name> performance.io-cache off
+gluster volume set <per all above Volume Name> performance.quick-read on
+gluster volume set <per all above Volume Name> performance.io-cache on
 gluster volume set <per all above Volume Name> performance.write-behind off
 gluster volume set <per all above Volume Name> performance.stat-prefetch off
 gluster volume set <per all above Volume Name> performance.read-ahead off

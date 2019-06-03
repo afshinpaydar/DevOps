@@ -1,0 +1,47 @@
+#Docker-internal server
+
+docker run --detach   --hostname gitlab.soshyant.local \
+  --publish 443:443 --publish 80:80 --publish 22:22  \
+  --name gitlab   --restart always   --volume /data/gitlab/config:/etc/gitlab \
+  --volume /data/gitlab/logs:/var/log/gitlab  \
+  --volume /data/gitlab/data:/var/opt/gitlab   gitlab/gitlab-ce:latest
+
+
+firewall-cmd --zone=public --add-port=80/tcp --permanent && firewall-cmd --reload
+firewall-cmd --zone=public --add-port=443/tcp --permanent && firewall-cmd --reload
+
+
+#LDAP Connectivity
+#Check LDAP Connectivity
+ldapsearch -H ldap://192.168.168.4 -x -W -D "gitlab@soshyant.local" -b "OU=soshyant-users,DC=soshyant,DC=local"
+<Password>
+
+vim ./var/opt/gitlab/gitlab-rails/etc/gitlab.yml
+
+  ## LDAP settings
+  # You can inspect a sample of the LDAP users with login access by running:
+  #   bundle exec rake gitlab:ldap:check RAILS_ENV=production
+  ldap:
+    enabled: true
+    sync_time:
+    host: "192.168.168.4"
+    port: 389
+    uid: 'sAMAccountName'
+    method: "plain" # "tls" or "ssl" or "plain"
+    bind_dn: "CN=gitlab,OU=soshyant-users,DC=soshyant,DC=local"
+    password: 'Soshyant@123'
+    active_directory:
+    allow_username_or_email_login: true
+    lowercase_usernames:
+    base: 'OU=soshyant-users,DC=soshyant,DC=local'
+    user_filter:
+    ## EE only
+    group_base:
+    admin_group:
+    sync_ssh_keys:
+    sync_time:
+
+
+
+
+gitlab-ctl restart
