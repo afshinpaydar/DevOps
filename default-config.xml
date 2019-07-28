@@ -1,10 +1,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
 <property name="discoverySpi">
-<bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+  <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
 <property name="ipFinder">
 <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
-<property name="namespace" value="snapp-payment-staging" />
+  <property name="namespace" value="#{ systemEnvironment['NAMESPACE'] }" />
+  <property name="master" value="okd-private-teh-1-snappcloud-io:443" />
 </bean>
 </property>
 </bean>
